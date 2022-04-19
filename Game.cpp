@@ -482,6 +482,7 @@ void Game::startMoving()
 					}
 //				}
 			}
+			{}
 			if (_bShip->arrivedExit())
 			{
 				_shipDir = 0;
