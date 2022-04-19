@@ -58,7 +58,7 @@ Game::Game(int sleepInterval)
 	}
 
 
-	Ghost* ghost1 = new Ghost({ 10,10 }, Signs::Ghost);
+	Ghost* ghost1 = new Ghost({18,10}, Signs::Ghost);
 	_ghostsVec.push_back(ghost1);
 	_numGhosts = _ghostsVec.size();
 
@@ -359,40 +359,13 @@ void Game::runKeys()
 			hitKeys(key);
 		}
 
-
-		char v;
-		for (Block* p : _blocksVec)
+		if (!gravitateAllBlocks())// all blocks have gravitated, if  "gravitateAllBlocks" is false - that means a block fell on a ship and killed it (death).
 		{
-			v = p->gravity();
-			if (v == Signs::SmallSign && p->getHasMoved())
-			{
-				if (p != _sShip->getCarrier())
-				{
-					if (p->getSize() > _sShip->getPower())
-					{
-						death();
-						printLives();
-						return;
-					}
-					else {
-						_sShip->setCarrier(p);
-						p->setHasMoved(false);
-					}
-				}
-			}
-			if (v == Signs::BigSign && p->getHasMoved())
-			{
-				if (p->getSize() > _bShip->getPower())
-				{
-					death();
-					printLives();
-					return;
-				}
-				else {
-					_bShip->setCarrier(p);
-					p->setHasMoved(false);
-				}
-			}
+			return;
+		}
+		if (!moveAllGhosts()) //all ghosts have moved, if moveAllGhosts is false - that means that a ghost have hit ship - then death...
+		{
+			return;
 		}
 
 		startMoving();
@@ -426,8 +399,11 @@ void Game::death()
 {
 	_lives--;
 	_bShip->del();
+	_bShip->removeFromBoard();
 	_sShip->del();
+	_sShip->removeFromBoard();
 	delBlocksVec();
+	delGhostVec();
 	_shipDir = 0;
 }
 
@@ -568,7 +544,7 @@ void Game::startMoving()
 					}
 //				}
 			}
-			{}
+			
 			if (_bShip->arrivedExit())
 			{
 				_shipDir = 0;
@@ -604,6 +580,61 @@ bool Game::pauseGame()const
 	}
 	clrscr();
 	return toContinue;
+}
+bool Game::gravitateAllBlocks() {
+
+	char v;
+	for (Block* p : _blocksVec)
+	{
+		v = p->gravity();
+		if (v == Signs::SmallSign && p->getHasMoved())
+		{
+			if (p != _sShip->getCarrier())
+			{
+				if (p->getSize() > _sShip->getPower())
+				{
+					death();
+					printLives();
+					return false;
+				}
+				else {
+					_sShip->setCarrier(p);
+					p->setHasMoved(false);
+				}
+			}
+		}
+		if (v == Signs::BigSign && p->getHasMoved())
+		{
+			if (p->getSize() > _bShip->getPower())
+			{
+				death();
+				printLives();
+				return false;
+			}
+			else {
+				_bShip->setCarrier(p);
+				p->setHasMoved(false);
+			}
+		}
+	}
+	return true; // all blocks did not kill any ship - can return true!
+
+}
+bool Game::moveAllGhosts() {
+	for (auto g : _ghostsVec)
+	{
+		if(!g->move())
+			if (g->getHitShip())
+			{
+				death();
+				printLives();
+				return false;
+
+			}
+
+	}
+	return true; //no ghost hit any ship - all can move forward!
+
 }
 
 /*
@@ -738,6 +769,8 @@ void Game::pressAnyKeyToContinue()const
 		}
 	}
 }
+
+
 /*
 * destractor
 */

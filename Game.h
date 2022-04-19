@@ -57,7 +57,8 @@ private:
 	vector<Ghost*> duplicateGhostsVec(vector<Ghost*> origVec);
 	void freeGhostsVec(std::vector<Ghost*> vec);
 	
-
+	bool gravitateAllBlocks();
+	bool moveAllGhosts();
 	
 	void death();
 	void tickDown(int timeCounter, int& countDown);

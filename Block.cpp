@@ -200,7 +200,7 @@ bool Block::move(int xDiff, int yDiff, int maxPower, vector<Block*>& vec)
 
 	}
 
-	// if arrives here, then loop has ended - all points will hit space, ship can move forward.
+	// if arrives here, then loop has ended - all points will hit space, block can move forward.
 		this->removeFromBoard();
 		this->del();
 		this->addDiffToPoints(xDiff, yDiff);
