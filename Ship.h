@@ -11,6 +11,7 @@ class Ship
 	int			_numPoints;
 	char		_ch;
 	Board*		_pBoard = nullptr;
+	bool _hitGhost = false;
 	bool		_exitArrived = false;
 	int _power = 0;
 	Block* _pBlockToCarry = nullptr;
@@ -34,7 +35,8 @@ public:
 	void removeFromBoard();
 	bool arrivedExit() const;
 
-	
+	void setHitGhost(bool hitGhost) { _hitGhost = hitGhost; }
+	bool getHitGhost() { return _hitGhost;  }
 private:
 	void addDiffToPoints(int xDiff, int yDiff);
 

@@ -173,6 +173,8 @@ bool Block::move(int xDiff, int yDiff, int maxPower, vector<Block*>& vec)
 
 		if (_pBoard->isWall(nextPos)) // case: next move = wall
 			return false;
+		else if (_pBoard->isGhost(nextPos))
+			return false;
 		else if (_pBoard->isExit(nextPos)) // case: next move = exit - block can not exit
 			return false;
 		else if (_pBoard->isShip(nextPos))

@@ -80,6 +80,15 @@ bool Board::isShip(Point pos)
 	return (board[pos.y][pos.x] == Signs::BigSign || board[pos.y][pos.x] == Signs::SmallSign);
 }
 /*
+* boolean function that checks if there is a ghost in some location
+* @parm Point pos -> the location to check.
+* @return T/F.
+*/
+bool Board::isGhost(Point pos)
+{
+	return (board[pos.y][pos.x] == Signs::Ghost);
+}
+/*
 * This function set the Two-dimensional table of the game.
 */
 void Board::setLevel1()

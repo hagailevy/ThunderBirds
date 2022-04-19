@@ -139,6 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Ghost.cpp" />
     <ClCompile Include="Ship.cpp" />
     <ClCompile Include="Block.cpp" />
     <ClCompile Include="Board.cpp" />
@@ -148,6 +149,7 @@
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Ghost.h" />
     <ClInclude Include="Ship.h" />
     <ClInclude Include="Block.h" />
     <ClInclude Include="Board.h" />

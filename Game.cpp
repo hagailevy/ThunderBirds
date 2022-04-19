@@ -5,6 +5,7 @@
 #include<fcntl.h>
 #include <io.h>
 #include "Game.h"
+
 /*
 * constractor for the object Game
 * @parm int sleepInterval - > set the speed of the game.
@@ -41,6 +42,8 @@ Game::Game(int sleepInterval)
 	vector<Point> block6Points({ { 11,7 },{ 11,6 },{ 11,5 } });
 	Block* block6 = new Block(block6Points, 3, '6');
 
+	
+
 	_blocksVec.push_back(block1);
 	_blocksVec.push_back(block2);
 	_blocksVec.push_back(block3);
@@ -53,6 +56,23 @@ Game::Game(int sleepInterval)
 	{
 		_blocksVec[i]->SetBoard(&board);
 	}
+
+
+	Ghost* ghost1 = new Ghost({ 10,10 }, Signs::Ghost);
+	_ghostsVec.push_back(ghost1);
+	_numGhosts = _ghostsVec.size();
+
+	for (int i = 0; i < _numGhosts; i++)
+	{
+		_ghostsVec[i]->setBoard(&board);
+	}
+
+}
+Game::Game(const Game& other)
+{
+	// TODO: copy ctor!!
+
+
 }
 
 /*
@@ -112,12 +132,32 @@ vector<Block*> Game::duplicateBlocksVec(vector<Block*> origVec)
 	}
 	return newVec;
 }
+
+
+vector<Ghost*> Game::duplicateGhostsVec(vector<Ghost*> origVec)
+{
+	vector<Ghost*> newVec;
+	for (int i = 0; i < origVec.size(); i++)
+	{
+		newVec.push_back(new Ghost(*(origVec[i])));
+	}
+	return newVec;
+}
 /*
 * This function free all blocks from the vector of Block*
 * @parm vector<Block*> -> the vector of blocks pointers to free.
 * 
 */
 void Game::freeBlocksVec(vector<Block*> vec)
+{
+	for (int i = 0; i < vec.size(); i++)
+	{
+		delete vec[i];
+	}
+	vec.clear();
+}
+
+void Game::freeGhostsVec(vector<Ghost*> vec)
 {
 	for (int i = 0; i < vec.size(); i++)
 	{
@@ -140,6 +180,18 @@ void Game::printBlocksVec()
 	}
 
 }
+
+void Game::printGhostsVec()
+{
+
+	for (int i = 0; i < _numGhosts; i++)
+	{
+		_ghostsVec[i]->draw();
+		_ghostsVec[i]->putOnBoard();
+	}
+
+}
+
 /*
 * delete all blocks from the game.
 */
@@ -151,6 +203,16 @@ void Game::delBlocksVec()
 		_blocksVec[i]->removeFromBoard();
 	}
 }
+
+
+void Game::delGhostVec()
+{
+	for (int i = 0; i < _numGhosts; i++)
+	{
+		_ghostsVec[i]->del();
+		_ghostsVec[i]->removeFromBoard();
+	}
+}
 /*
 * set all blocks in game.
 */
@@ -160,6 +222,16 @@ void Game::setBlocksVec()
 	for (int i = 0; i < _numBlocks; i++)
 	{
 		_blocksVec[i]->putOnBoard();
+	}
+
+}
+
+void Game::setGhostsVec()
+{
+
+	for (int i = 0; i < _numGhosts; i++)
+	{
+		_ghostsVec[i]->putOnBoard();
 	}
 
 }
@@ -182,12 +254,14 @@ void Game::run()
 		Ship* pBigShipSaver = new Ship(*_bShip);
 		Ship* pSmallShipSaver = new Ship(*_sShip);
 		vector<Block*> blockSaverVec = duplicateBlocksVec(_blocksVec);
+		vector <Ghost*> ghostSaverVec = duplicateGhostsVec(_ghostsVec);
 
 		while (_lives > 0 && (!_bigArrived || !_smallArrived) && !_exit)
 		{
 			_sShip->draw();
 			_bShip->draw();
 			printBlocksVec();
+			printGhostsVec();
 			_bShip->putOnBoard();
 			_sShip->putOnBoard();
 
@@ -214,12 +288,16 @@ void Game::run()
 			freeBlocksVec(_blocksVec);
 			_blocksVec = duplicateBlocksVec(blockSaverVec);
 
+			delGhostVec();
+			freeGhostsVec(_ghostsVec);
+			_ghostsVec = duplicateGhostsVec(ghostSaverVec);
 
 		}
 
 		delete pBigShipSaver;
 		delete pSmallShipSaver;
 		freeBlocksVec(blockSaverVec);
+		freeGhostsVec(ghostSaverVec);
 
 		if (_lives == 0)
 		{
@@ -318,6 +396,14 @@ void Game::runKeys()
 		}
 
 		startMoving();
+
+		if (_sShip->getHitGhost() || _bShip->getHitGhost())
+		{
+			death();
+			printLives();
+			return;
+		}
+
 
 		if (_bigArrived && _smallArrived)  // both ships have exited
 			toContinue = false;

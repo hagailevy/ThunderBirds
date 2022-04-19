@@ -4,6 +4,7 @@
 #include "Point.h"
 #include "Ship.h"
 #include "Block.h"
+#include "Ghost.h"
 #include "utils.h"
 
 struct GameConstants {
@@ -18,8 +19,12 @@ class Game
 	Board board;
 	Ship* _sShip;
 	Ship* _bShip;
+	
 	std::vector<Block*> _blocksVec;
 	int _numBlocks;
+
+	std::vector<Ghost*> _ghostsVec;
+	int _numGhosts;
 	int _activeShip = Keys::Big;
 	int _shipDir = 0;
 	bool _bigArrived = false, _smallArrived = false;
@@ -38,15 +43,27 @@ private:
 	void  printLossScreen()const;
 	void startMoving();
 	void hitKeys(char key);
-	std::vector<Block*> duplicateBlocksVec(std::vector<Block*> origVec);
-	void freeBlocksVec(std::vector<Block*> vec);
-	void printBlocksVec();
+	
+	void printBlocksVec(); // functions for blocks vector usings:
 	void delBlocksVec();
 	void setBlocksVec();
+	std::vector<Block*> duplicateBlocksVec(std::vector<Block*> origVec);
+	void freeBlocksVec(std::vector<Block*> vec);
+
+
+	void printGhostsVec(); // functions for ghosts vector usings :
+	void delGhostVec();
+	void setGhostsVec();
+	vector<Ghost*> duplicateGhostsVec(vector<Ghost*> origVec);
+	void freeGhostsVec(std::vector<Ghost*> vec);
+	
+
+	
 	void death();
 	void tickDown(int timeCounter, int& countDown);
 public:
 	Game(int sleepInterval = GameConstants::NormalSleep);
+	Game(const Game& other);
 
 	void runKeys();
 	void run();

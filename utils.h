@@ -32,6 +32,7 @@ struct Signs {
 	constexpr static char Space = ' ';
 	constexpr static char Brick = (char)177;
 	constexpr static char Block = '1';
+	constexpr static char Ghost = '^';
 	constexpr static char EXIT = 'E';
 	constexpr static char Heart = (char)3;
 };

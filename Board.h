@@ -33,6 +33,7 @@ public:
 	bool isBlock(Point pos);
 	bool isExit(Point pos);
 	bool isShip(Point pos);
+	bool isGhost(Point pos);
 	void setLevel1();
 	void setExit(int row = 7, int col = 76);
 	void gotoEndBoard();

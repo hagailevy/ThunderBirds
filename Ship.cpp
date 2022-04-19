@@ -21,7 +21,9 @@ Ship::Ship(const Ship& other)
 	this->_ch = other._ch;
 	this->_power = other._power;
 	this->_pBoard = other._pBoard;
+	this->_hitGhost = other._hitGhost;
 	this->_exitArrived = other._exitArrived;
+
 }
 /* void function that set the board.
 * @parm Board* pBoard ->a pointer to a Board object.
@@ -112,6 +114,11 @@ bool Ship::move(int xDiff, int yDiff, int maxPower, vector<Block*>& vec)
 
 		if (_pBoard->isWall(nextPos)) // case: next move = wall
 			return false;
+		else if (_pBoard->isGhost(nextPos))
+		{
+			_hitGhost = true;
+			return false;
+		}
 		else if (_pBoard->isExit(nextPos)) // case: next move = exit
 		{
 			this->removeFromBoard();
