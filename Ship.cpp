@@ -106,10 +106,8 @@ void Ship::addDiffToPoints(int xDiff, int yDiff) {
 */
 bool Ship::move(int xDiff, int yDiff, int maxPower, vector<Block*>& vec)
 {
-
 	for (int i = 0; i < _numPoints; i++) 
 	{
-
 		Point nextPos(_pointsVec[i].x + xDiff, _pointsVec[i].y + yDiff);
 
 		if (_pBoard->isWall(nextPos)) // case: next move = wall
@@ -124,6 +122,18 @@ bool Ship::move(int xDiff, int yDiff, int maxPower, vector<Block*>& vec)
 			return false;
 	}
 
+	////check carry move and remove the carry of we mithakech bakir
+	//if (_pBlockToCarry != nullptr) //case block fell on ship - then ship needs to carry it
+	//{
+	//	if (yDiff >= 0) //only for right and left and down (otherwise block already moved)
+	//	{
+	//		if (!_pBlockToCarry->move(xDiff, yDiff, _sShip->getPower(), _blocksVec))
+	//		{
+	//			_sShip->setCarrier(nullptr);
+	//		}
+	//	}
+	//}
+
 	for (int i = 0; i < _numPoints; i++)
 	{
 		Point nextPos(_pointsVec[i].x + xDiff, _pointsVec[i].y + yDiff);
@@ -135,20 +145,17 @@ bool Ship::move(int xDiff, int yDiff, int maxPower, vector<Block*>& vec)
 			{
 				if (maxPower <= 0) // case: ship can not move the block
 					return false;
-				else
+				else if (vec[idx] != _pBlockToCarry)
 				{
 					// recursive - check for more blocks to push:
 					bool res = vec[idx]->move(xDiff, yDiff, maxPower - vec[idx]->getSize(), vec);
 					if (res == false)
 						return false;
-				
 				}
 			}
-
 		}
 	}
 	// if arrives here, then loop has ended - all points will hit space, ship can move forward.
-	
 	this->removeFromBoard();
 	this->del();
 	this->addDiffToPoints(xDiff, yDiff);

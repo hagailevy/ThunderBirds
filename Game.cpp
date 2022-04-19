@@ -306,20 +306,15 @@ void Game::runKeys()
 			{
 				if (p->getSize() > _bShip->getPower())
 				{
-
 					death();
 					printLives();
 					return;
-
-
 				}
 				else {
 					_bShip->setCarrier(p);
 					p->setHasMoved(false);
 				}
 			}
-		
-
 		}
 
 		startMoving();
@@ -337,7 +332,6 @@ void Game::runKeys()
 		}
 		Sleep(_sleepInterval);
 	}
-
 }
 /*
 * set the data members when the player has died.
@@ -450,24 +444,18 @@ void Game::startMoving()
 			if (!_bigArrived)
 				_bShip->putOnBoard();
 
-
-
 			didMove = _sShip->move(xDiff, yDiff, _sShip->getPower(), _blocksVec);
 			carrier = _sShip->getCarrier();
 			if (carrier != nullptr && didMove) //case block fell on ship - then ship needs to carry it
 			{
-				if (yDiff == 0) //only for right and left (otherwise block already moved)
+				if (yDiff >= 0) //only for right and left (otherwise block already moved)
 				{
-					
 					if (!carrier->move(xDiff, yDiff, _sShip->getPower(), _blocksVec))
 					{
-						
 							_sShip->setCarrier(nullptr);
 					}
 				}
-
 			}
-
 
 			if (_sShip->arrivedExit())
 			{
@@ -481,22 +469,18 @@ void Game::startMoving()
 			if (!_smallArrived)// preventing big ship to delete small ship
 				_sShip->putOnBoard();
 
-
-
 			didMove = _bShip->move(xDiff, yDiff, _bShip->getPower(), _blocksVec);
 			carrier = _bShip->getCarrier();
 			if (carrier != nullptr && didMove)
 			{
-				if (yDiff >= 0)
-				{
-
+//				if (yDiff >= 0)
+//				{
 					if (!carrier->move(xDiff, yDiff, _bShip->getPower(), _blocksVec))
 					{
 						if(yDiff==0)
 							_bShip->setCarrier(nullptr);
 					}
-				
-				}
+//				}
 			}
 			if (_bShip->arrivedExit())
 			{
