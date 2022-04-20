@@ -40,6 +40,8 @@ struct Signs {
 struct Sizes {
 	constexpr static int InGameScreens_HEIGHT = 6;
 	constexpr static int InGameScreens_WIDTH = 52;
+	constexpr static int BoardSize_HEIGHT = 80;
+	constexpr static int BoardSize_WIDTH = 25;
 	constexpr static int BigPower = 6;
 	constexpr static int SmallPower = 3;
 };
@@ -50,4 +52,11 @@ struct MoveDestType {
 	constexpr static int Exit = 2;
 	constexpr static int Block = 3;
 	constexpr static int Ship = 4;
+};
+
+
+struct GhostType {
+	constexpr static char Horizonal = 0;
+	constexpr static char Vertical = 1;
+	constexpr static char Wandering = 2;
 };

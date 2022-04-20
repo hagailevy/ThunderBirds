@@ -1,6 +1,26 @@
 #include "Ghost.h"
 #include "Board.h"
 
+Ghost::Ghost(Point pos, char ch, Board* pBoard, char movingMode)
+	: _pos(pos), _ch(ch), _pBoard(pBoard), _movingMode(movingMode)
+{
+	switch (_movingMode)
+	{
+	case(GhostType::Horizonal):
+		_xDiff = 1;
+		break;
+	case (GhostType::Vertical):
+		_yDiff = 1;
+		break;
+	case(GhostType::Wandering):
+		break;
+			
+
+
+	}
+
+}
+
 void Ghost::setBoard(Board* pBoard) { _pBoard = pBoard; }
 
 
@@ -37,7 +57,7 @@ bool Ghost::move() {
 		_hitShip = true;
 		return false;
 	}
-	if (_pBoard->isBlock(nextPos) ||_pBoard->isWall(nextPos) || _pBoard->isExit(nextPos) || _pBoard->isGhost(nextPos)) // case: next move = wall
+	if (_pBoard->isBlock(nextPos) || _pBoard->isWall(nextPos) || _pBoard->isExit(nextPos) || _pBoard->isGhost(nextPos)) // case: next move = wall
 	{
 		if (_yDiff != 0) // change ghost direction!
 			_yDiff *= -1;

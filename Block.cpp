@@ -131,20 +131,17 @@ char Block::gravity()
 	{
 		dest = _pointsVec[i];
 		dest.y++;
-		if (_pBoard->isWall(dest) || _pBoard->isShip(dest) || (_pBoard->isBlock(dest) && _pBoard->getCharAt(dest) != _ch))
+		if (_pBoard->isWall(dest) || _pBoard->isShip(dest) || (_pBoard->isBlock(dest) && _pBoard->getCharAt(dest) != _ch) || _pBoard->isGhost(dest))
 			return _pBoard->getCharAt(dest); //fell on the floor or on a ship (brick)
 	}
 
 	// otherwise: keep falling!!
 
 	_hasMoved = true;
+	this->removeFromBoard();
 	this->del();
-	for (int i = 0; i < _numPoints; i++)
-	{
-		removeFromBoard();
-		_pointsVec[i].y++;
-		putOnBoard();
-	}
+	this->addDiffToPoints(0, 1);
+	this->putOnBoard();
 	this->draw();
 	return Signs::Space;
 

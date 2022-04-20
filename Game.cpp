@@ -1,4 +1,4 @@
-#include <conio.h>
+﻿#include <conio.h>
 #include <cctype>
 #include <windows.h>
 #include <iostream>
@@ -19,7 +19,7 @@ Game::Game(int sleepInterval)
 	_bShip->SetBoard(&board);
 
 	vector<Point> smallShipPoints({ {6,10}, {7,10} });
-	_sShip = new Ship(smallShipPoints, 2, Signs::SmallSign,Sizes::SmallPower);
+	_sShip = new Ship(smallShipPoints, 2, Signs::SmallSign, Sizes::SmallPower);
 	_sShip->SetBoard(&board);
 
 	//init blocks - TODO: dtors
@@ -42,7 +42,7 @@ Game::Game(int sleepInterval)
 	vector<Point> block6Points({ { 11,7 },{ 11,6 },{ 11,5 } });
 	Block* block6 = new Block(block6Points, 3, '6');
 
-	
+
 
 	_blocksVec.push_back(block1);
 	_blocksVec.push_back(block2);
@@ -58,7 +58,7 @@ Game::Game(int sleepInterval)
 	}
 
 
-	Ghost* ghost1 = new Ghost({18,10}, Signs::Ghost);
+	Ghost* ghost1 = new Ghost({ 19,10 }, Signs::Ghost);
 	_ghostsVec.push_back(ghost1);
 	_numGhosts = _ghostsVec.size();
 
@@ -80,12 +80,12 @@ Game::Game(const Game& other)
 */
 void Game::chooseOptions()
 {
-	
+
 	printMenu();
 	char key = 0;
 	while (!key)
 	{
-		
+
 		if (_kbhit())
 		{
 			key = _getch();
@@ -106,18 +106,52 @@ void Game::chooseOptions()
 		}
 	}
 	clrscr();
-	
+
 }
 /*
 * this is a void function that prints the usermenu to the screen.
 */
 void Game::printMenu()const {
 	clrscr();
-	cout << "\n\t\t   Welcome to ThunderBirds!" << endl << endl;
+	/*cout << "\n\t\t   Welcome to ThunderBirds!" << endl << endl;
 	cout << "\t\ta) Click 1 to start a new game." << endl;
 	cout << "\t\tb) Click 8 for instructions and keys." << endl;
-	cout << "\t\tc) Click 9 to exit." << endl;
+	cout << "\t\tc) Click 9 to exit." << endl;*/
 
+	static char menuScreen[Sizes::InGameScreens_HEIGHT + 19][Sizes::InGameScreens_WIDTH + 28] =
+	{       "                                                                              \n",
+			"                       Welcome to ThunderBirds!                               \n",
+			"                                                                              \n",
+			"                   a) Click 1 to start a new game.                            \n",
+			"                   b) Click 2 to load game from a specific file.              \n",
+			"                   c) Click 3 to change color mode.                           \n",
+			"                   d) Click 8 for instructions and keys.                      \n",
+			"                   e) Click 9 to exit.                                        \n",
+			"                                                                              \n",
+			"      ~)*#########*                                                           \n",
+			"        |##############                                                       \n",
+			"           |##############.                                                   \n",
+			"               |###########%%* .................                              \n",
+			"               )##%(*,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,.                    \n",
+			"              ),,,,,,,,,,,,,,,,,,,,,,,,,,,,,%%%*,,,,,,,,,,*####)              \n",
+			"              /.,,,,,,,,,,,,,,,,,,,,,,,,#%%     %%%,,,,,,,,%#######)          \n",
+			"          //###%%#####%%%%#(*,,,,,,,,,,%%.        %%/,,,,,,%##########)       \n",
+			"     ~&&&&&&&&&&&&&&&&&&&&&&&&&(******&& .........&&*******&&&&&&&&&&&&)      \n",
+			"             //************************(&& ....../&&*******&&&&&&&&&&)        \n",
+			"              |**************************(&&&&&&&&*********&&&&&&&)           \n",
+			"                |*****************************************/&&)                \n",
+			"                )&&&&&&&#******************************                       \n",
+			"             )&&&&&&&&&&&&&*                                                  \n",
+			"          /&&&&&&&&&&&&&&                                                     \n",
+			"      ~)&&&&&&&&&&&&&&.                                                        ",
+	};
+
+	for (int r = 0; r < Sizes::InGameScreens_HEIGHT + 19; r++)
+		{
+			for (int c = 0; c < Sizes::InGameScreens_WIDTH + 28; c++)
+				cout << menuScreen[r][c];
+
+		}
 }
 /*
 * This function duplicate vector<Block*>
@@ -146,7 +180,7 @@ vector<Ghost*> Game::duplicateGhostsVec(vector<Ghost*> origVec)
 /*
 * This function free all blocks from the vector of Block*
 * @parm vector<Block*> -> the vector of blocks pointers to free.
-* 
+*
 */
 void Game::freeBlocksVec(vector<Block*> vec)
 {
@@ -240,12 +274,12 @@ void Game::setGhostsVec()
 */
 void Game::run()
 {
-	
+
 	chooseOptions();
-	
+
 	while (!_exit) {
 
-		
+
 		board.setLevel1();
 		board.setExit();
 		board.firstDraw();
@@ -422,17 +456,17 @@ void Game::tickDown(int timeCounter, int& countDown)
 		gotoxy(20, 22);
 		cout << countDown;
 
-		
+
 	}
 
-	
+
 }
 /*
 * This is a void function that print the lives on the screen.
 */
 void Game::printLives()const {
-	
-	
+
+
 	gotoxy(25, 23);
 	cout << "      ";
 	gotoxy(25, 23);
@@ -514,7 +548,7 @@ void Game::startMoving()
 				{
 					if (!carrier->move(xDiff, yDiff, _sShip->getPower(), _blocksVec))
 					{
-							_sShip->setCarrier(nullptr);
+						_sShip->setCarrier(nullptr);
 					}
 				}
 			}
@@ -535,16 +569,16 @@ void Game::startMoving()
 			carrier = _bShip->getCarrier();
 			if (carrier != nullptr && didMove)
 			{
-//				if (yDiff >= 0)
-//				{
-					if (!carrier->move(xDiff, yDiff, _bShip->getPower(), _blocksVec))
-					{
-						if(yDiff==0)
-							_bShip->setCarrier(nullptr);
-					}
-//				}
+				//				if (yDiff >= 0)
+				//				{
+				if (!carrier->move(xDiff, yDiff, _bShip->getPower(), _blocksVec))
+				{
+					if (yDiff == 0)
+						_bShip->setCarrier(nullptr);
+				}
+				//				}
 			}
-			
+
 			if (_bShip->arrivedExit())
 			{
 				_shipDir = 0;
@@ -562,7 +596,7 @@ bool Game::pauseGame()const
 	bool toContinue = true;
 	clrscr();
 	printPauseScreen();
-	
+
 	while (toContinue)
 	{
 		int key = 0;
@@ -623,7 +657,7 @@ bool Game::gravitateAllBlocks() {
 bool Game::moveAllGhosts() {
 	for (auto g : _ghostsVec)
 	{
-		if(!g->move())
+		if (!g->move())
 			if (g->getHitShip())
 			{
 				death();
@@ -643,7 +677,7 @@ bool Game::moveAllGhosts() {
 void Game::printInstructions() const
 {
 	clrscr();
-	static char instructionsScreen[Sizes::InGameScreens_HEIGHT+19][Sizes::InGameScreens_WIDTH+28] = {
+	static char instructionsScreen[Sizes::InGameScreens_HEIGHT + 19][Sizes::InGameScreens_WIDTH + 28] = {
 	"******************************************************************************\n",
 	"*                                                                            *\n",
 	"*                    ThunderBirds - Instructions:                            *\n",
@@ -653,12 +687,12 @@ void Game::printInstructions() const
 	"*   Small spaceship can push blocks with the maximum total size of 2.        *\n",
 	"*   Each block that is located 'in the air' will fall down,                  *\n",
 	"*   But if it falls on top of a spachship that is 'weaker' than that block,  *\n",
-	"*   another life will go down. If you lose 3 lives - game is over.           *\n",				
+	"*   another life will go down. If you lose 3 lives - game is over.           *\n",
 	"*                           ~ GOOD LUCK! ~                                   *\n",
 	"*                                                                            *\n",
 	"*  Symbols:    '@'   - Big spaceship                                         *\n",
 	"*              '$'   - Small spaceship                                       *\n",
-	"*              'W'   - Walls                                                 *\n",               
+	"*              'W'   - Walls                                                 *\n",
 	"*              'E'   - Exit position                                         *\n",
 	"*            '0'-'9' - Blocks                                                *\n",
 	"*  Keys:                                                                     *\n",
@@ -691,7 +725,7 @@ void Game::printPauseScreen() const
 		"*     Press ESC to continue, or 9 to exit game   *\n",
 		"*                                                *\n",
 		"**************************************************\0" };
-	
+
 	cout << "\n\n\n";
 	for (int r = 0; r < Sizes::InGameScreens_HEIGHT; r++)
 	{
@@ -700,7 +734,7 @@ void Game::printPauseScreen() const
 			cout << pauseScreen[r][c];
 
 	}
-	
+
 
 
 }
@@ -732,7 +766,7 @@ void  Game::printWinningScreen() const {
 * this is a void function that prints to the screen a massage in case the player won.
 */
 
-void  Game::printLossScreen() const{
+void  Game::printLossScreen() const {
 	clrscr();
 	static char lossScreen[Sizes::InGameScreens_HEIGHT][Sizes::InGameScreens_WIDTH] = {
 		"**************************************************\n",
@@ -787,6 +821,5 @@ Game::~Game()
 	//freeBlocksVec(_blocksVec);
 
 }
-
 
 
