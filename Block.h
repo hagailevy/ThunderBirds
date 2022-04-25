@@ -1,7 +1,7 @@
 #pragma once
 #include "Point.h"
 class Board;
-
+class Ship;
 
 
 class Block
@@ -12,11 +12,18 @@ class Block
 	Board*		 _pBoard = nullptr;
 	bool		_hasMoved = false;
 
+	Ship* _shipToMoveWith = nullptr;
+
+
 public:
 	Block(vector<Point> pointsVec, int size, char ch);
 	Block(const Block& other);
 	Block& operator=(const Block& other) = delete;
 	~Block();
+
+
+	void setShipToMoveWith(Ship* ship) { _shipToMoveWith = ship; }
+	Ship* getShipToMoveWith()const { return _shipToMoveWith; }
 
 
 	void setHasMoved(bool status);
@@ -32,7 +39,8 @@ public:
 	bool isInBlock(Point p);
 	char gravity();
 	friend int findBlockIndex(Point p, vector<Block*>& vec);
-private:
+
+
 	void addDiffToPoints(int xDiff, int yDiff);
 };
 

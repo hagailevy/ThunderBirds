@@ -11,7 +11,7 @@ struct GameConstants {
 	constexpr static int DebugSleep = 150;
 	constexpr static int NormalSleep = 80;
 	constexpr static int SecondSleep = 1000;
-	constexpr static int CountdownPerLife = 80;
+	constexpr static int CountdownPerLife = 1000;
 };
 /**/
 class Game
@@ -19,19 +19,28 @@ class Game
 	Board board;
 	Ship* _sShip;
 	Ship* _bShip;
-	
+	char _fileNum = 'a';
+
 	std::vector<Block*> _blocksVec;
 	int _numBlocks;
-
 	std::vector<Ghost*> _ghostsVec;
 	int _numGhosts;
+
 	int _activeShip = Keys::Big;
 	int _shipDir = 0;
 	bool _bigArrived = false, _smallArrived = false;
 	int _sleepInterval;
 	int _lives = 3;
 	bool _exit = false;
+
+	vector<bool> _blocksCarriedByBigShip;
+	vector<bool> _blocksCarriedBySmallShip;
+
 private:
+	void readFromFilesOrdered();
+	void loadScreen(const ifstream& file);
+	void printBadFile(const string& fileName);
+
 	void pressAnyKeyToContinue() const;
 	void chooseOptions();
 	void printMenu()const;

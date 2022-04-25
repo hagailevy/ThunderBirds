@@ -15,6 +15,11 @@ class Ship
 	bool		_exitArrived = false;
 	int _power = 0;
 	Block* _pBlockToCarry = nullptr;
+
+	vector<Block*> _blocksToCarryVec;
+	int _carriedBlocksWeight = 0;
+
+
 public:
 	
 	Ship(vector<Point> pointsVec, int size, char ch, int power);
@@ -22,7 +27,14 @@ public:
 	Ship(const Ship& other);
 	~Ship();
 
+	void initBlockToCarryVector(int numBlocks);
+	void setCarrierAtIndex(int index, Block* carrier) { _blocksToCarryVec[index] = carrier; }
+	int getCarriedBlocksWeight() const { return _carriedBlocksWeight; }
 
+	void displayMovedBlocks();
+	void deleteMovedBlocks();
+
+	char getCh() const { return _ch; }
 	void SetBoard(Board* pBoard);
 	void setCarrier(Block* p);
 	Block* getCarrier() const;
@@ -39,6 +51,6 @@ public:
 	bool getHitGhost() { return _hitGhost;  }
 private:
 	void addDiffToPoints(int xDiff, int yDiff);
-
+	void moveCarriers(int xDiff, int yDiff);
 };
 

@@ -10,7 +10,7 @@ Ghost::Ghost(Point pos, char ch, Board* pBoard, char movingMode)
 		_xDiff = 1;
 		break;
 	case (GhostType::Vertical):
-		_yDiff = 1;
+		_yDiff = 0;
 		break;
 	case(GhostType::Wandering):
 		break;

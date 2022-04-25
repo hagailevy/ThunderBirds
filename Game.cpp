@@ -4,6 +4,8 @@
 #include <iostream>
 #include<fcntl.h>
 #include <io.h>
+#include <fstream>
+#include <string.h>
 #include "Game.h"
 
 /*
@@ -13,6 +15,8 @@
 Game::Game(int sleepInterval)
 	:_sleepInterval(sleepInterval)
 {
+
+
 	//init ships
 	vector<Point> bigShipPoints({ { 6,17 },  { 7 , 17 } , { 6 , 18}, { 7,18 } });
 	_bShip = new Ship(bigShipPoints, 4, Signs::BigSign, Sizes::BigPower);
@@ -39,8 +43,8 @@ Game::Game(int sleepInterval)
 	vector<Point> block5Points({ { 48,13 } });
 	Block* block5 = new Block(block5Points, 1, '5');
 
-	vector<Point> block6Points({ { 11,7 },{ 11,6 },{ 11,5 } });
-	Block* block6 = new Block(block6Points, 3, '6');
+	vector<Point> block6Points({ { 11,6 },{ 11,5 } });
+	Block* block6 = new Block(block6Points, 2, '6');
 
 
 
@@ -58,7 +62,7 @@ Game::Game(int sleepInterval)
 	}
 
 
-	Ghost* ghost1 = new Ghost({ 19,10 }, Signs::Ghost);
+	Ghost* ghost1 = new Ghost({ 5,10 }, Signs::Ghost);
 	_ghostsVec.push_back(ghost1);
 	_numGhosts = _ghostsVec.size();
 
@@ -67,6 +71,10 @@ Game::Game(int sleepInterval)
 		_ghostsVec[i]->setBoard(&board);
 	}
 
+
+	_sShip->initBlockToCarryVector(_numBlocks);
+	_bShip->initBlockToCarryVector(_numBlocks);
+
 }
 Game::Game(const Game& other)
 {
@@ -74,6 +82,47 @@ Game::Game(const Game& other)
 
 
 }
+void Game::readFromFilesOrdered() {
+	string name = "tb_";
+	string end = ".screen";
+	string fileName = name + _fileNum + end;
+	
+	ifstream currentFile(fileName);
+
+	if (!currentFile.is_open() || _fileNum <= 'z') {
+		_fileNum++;
+		fileName = name + _fileNum + end;
+		currentFile.open(fileName, std::ios_base::in);
+
+	}
+
+	
+
+
+}
+
+
+void Game::printBadFile(const string& fileName)
+{
+	clrscr();
+	cout << "\n\t\t Sorry, following file is missing: " << fileName << endl;
+	cout << "\t Press any key to continue for the next (lexicographically) file...";
+
+
+
+
+}
+
+
+void Game::loadScreen(const ifstream& file)
+{
+	string line;
+
+	
+
+
+}
+
 
 /*
 * This function handle the user options for the menu.
@@ -92,12 +141,14 @@ void Game::chooseOptions()
 			switch (key)
 			{
 			case(Keys::StartGame):
+				//readFromFilesOrdered();
 				break;
 			case(Keys::Instructions):
 				printInstructions();
 				key = 0;
 				printMenu();
 				break;
+				
 			case(Keys::ExitKey):
 				_exit = true;
 				break;
@@ -118,37 +169,37 @@ void Game::printMenu()const {
 	cout << "\t\tb) Click 8 for instructions and keys." << endl;
 	cout << "\t\tc) Click 9 to exit." << endl;*/
 
-	static char menuScreen[Sizes::InGameScreens_HEIGHT + 19][Sizes::InGameScreens_WIDTH + 28] =
-	{       "                                                                              \n",
-			"                       Welcome to ThunderBirds!                               \n",
-			"                                                                              \n",
-			"                   a) Click 1 to start a new game.                            \n",
-			"                   b) Click 2 to load game from a specific file.              \n",
-			"                   c) Click 3 to change color mode.                           \n",
-			"                   d) Click 8 for instructions and keys.                      \n",
-			"                   e) Click 9 to exit.                                        \n",
-			"                                                                              \n",
-			"      ~)*#########*                                                           \n",
-			"        |##############                                                       \n",
-			"           |##############.                                                   \n",
-			"               |###########%%* .................                              \n",
-			"               )##%(*,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,.                    \n",
-			"              ),,,,,,,,,,,,,,,,,,,,,,,,,,,,,%%%*,,,,,,,,,,*####)              \n",
-			"              /.,,,,,,,,,,,,,,,,,,,,,,,,#%%     %%%,,,,,,,,%#######)          \n",
-			"          //###%%#####%%%%#(*,,,,,,,,,,%%.        %%/,,,,,,%##########)       \n",
-			"     ~&&&&&&&&&&&&&&&&&&&&&&&&&(******&& .........&&*******&&&&&&&&&&&&)      \n",
-			"             //************************(&& ....../&&*******&&&&&&&&&&)        \n",
-			"              |**************************(&&&&&&&&*********&&&&&&&)           \n",
-			"                |*****************************************/&&)                \n",
-			"                )&&&&&&&#******************************                       \n",
-			"             )&&&&&&&&&&&&&*                                                  \n",
-			"          /&&&&&&&&&&&&&&                                                     \n",
-			"      ~)&&&&&&&&&&&&&&.                                                        ",
+	static char menuScreen[Sizes::BoardHeight][Sizes::BoardWidth] =
+	{       "******************************************************************************\n",
+			"*                      Welcome to ThunderBirds!                              *\n",
+			"*                                                                            *\n",
+			"*                  a) Click 1 to start a new game.                           *\n",
+			"*                  b) Click 2 to load game from a specific file.             *\n",
+			"*                  c) Click 3 to change color mode.                          *\n",
+			"*                  d) Click 8 for instructions and keys.                     *\n",
+			"*                  e) Click 9 to exit.                                       *\n",
+			"*                                                                            *\n",
+			"*     ~)*#########*                                                          *\n",
+			"*       |##############                                                      *\n",
+			"*          |##############.                                                  *\n",
+			"*              |###########%%* .................                             *\n",
+			"*              )##%(*,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,.                   *\n",
+			"*             ),,,,,,,,,,,,,,,,,,,,,,,,,,,,,%%%*,,,,,,,,,,*####)             *\n",
+			"*             /.,,,,,,,,,,,,,,,,,,,,,,,,#%%     %%%,,,,,,,,%#######)         *\n",
+			"*         //###%%#####%%%%#(*,,,,,,,,,,%%.        %%/,,,,,,%##########)      *\n",
+			"*    ~&&&&&&&&&&&&&&&&&&&&&&&&&(******&& .........&&*******&&&&&&&&&&&&)     *\n",
+			"*            //************************(&& ....../&&*******&&&&&&&&&&)       *\n",
+			"*             |**************************(&&&&&&&&*********&&&&&&&)          *\n",
+			"*               |*****************************************/&&)               *\n",
+			"*               )&&&&&&&#******************************                      *\n",
+			"*            )&&&&&&&&&&&&&*                                                 *\n",
+			"*         /&&&&&&&&&&&&&&                                                    *\n",
+			"***   ~)&&&&&&&&&&&&&&.       ************************************************\0",
 	};
 
-	for (int r = 0; r < Sizes::InGameScreens_HEIGHT + 19; r++)
+	for (int r = 0; r < Sizes::BoardHeight; r++)
 		{
-			for (int c = 0; c < Sizes::InGameScreens_WIDTH + 28; c++)
+			for (int c = 0; c < Sizes::BoardWidth; c++)
 				cout << menuScreen[r][c];
 
 		}
@@ -541,17 +592,17 @@ void Game::startMoving()
 				_bShip->putOnBoard();
 
 			didMove = _sShip->move(xDiff, yDiff, _sShip->getPower(), _blocksVec);
-			carrier = _sShip->getCarrier();
-			if (carrier != nullptr && didMove) //case block fell on ship - then ship needs to carry it
-			{
-				if (yDiff >= 0) //only for right and left (otherwise block already moved)
-				{
-					if (!carrier->move(xDiff, yDiff, _sShip->getPower(), _blocksVec))
-					{
-						_sShip->setCarrier(nullptr);
-					}
-				}
-			}
+			//carrier = _sShip->getCarrier();
+			//if (carrier != nullptr && didMove) //case block fell on ship - then ship needs to carry it
+			//{
+			//	if (yDiff >= 0) //only for right and left (otherwise block already moved)
+			//	{
+			//		if (!carrier->move(xDiff, yDiff, _sShip->getPower(), _blocksVec))
+			//		{
+			//			_sShip->setCarrier(nullptr);
+			//		}
+			//	}
+			//}
 
 			if (_sShip->arrivedExit())
 			{
@@ -566,18 +617,18 @@ void Game::startMoving()
 				_sShip->putOnBoard();
 
 			didMove = _bShip->move(xDiff, yDiff, _bShip->getPower(), _blocksVec);
-			carrier = _bShip->getCarrier();
-			if (carrier != nullptr && didMove)
-			{
-				//				if (yDiff >= 0)
-				//				{
-				if (!carrier->move(xDiff, yDiff, _bShip->getPower(), _blocksVec))
-				{
-					if (yDiff == 0)
-						_bShip->setCarrier(nullptr);
-				}
-				//				}
-			}
+			//carrier = _bShip->getCarrier();
+			//if (carrier != nullptr && didMove)
+			//{
+			//	//				if (yDiff >= 0)
+			//	//				{
+			//	if (!carrier->move(xDiff, yDiff, _bShip->getPower(), _blocksVec))
+			//	{
+			//		if (yDiff == 0)
+			//			_bShip->setCarrier(nullptr);
+			//	}
+			//	//				}
+			//}
 
 			if (_bShip->arrivedExit())
 			{
@@ -618,10 +669,14 @@ bool Game::pauseGame()const
 bool Game::gravitateAllBlocks() {
 
 	char v;
-	for (Block* p : _blocksVec)
+	Block* p;
+
+	for (int i = 0; i < _blocksVec.size(); i++)
 	{
+		p = _blocksVec[i];
 		v = p->gravity();
-		if (v == Signs::SmallSign && p->getHasMoved())
+
+		if (v == Signs::SmallSign)
 		{
 			if (p != _sShip->getCarrier())
 			{
@@ -632,12 +687,13 @@ bool Game::gravitateAllBlocks() {
 					return false;
 				}
 				else {
-					_sShip->setCarrier(p);
+					_sShip->setCarrierAtIndex(i,p);
+					p->setShipToMoveWith(_sShip);
 					p->setHasMoved(false);
 				}
 			}
 		}
-		if (v == Signs::BigSign && p->getHasMoved())
+		if (v == Signs::BigSign)
 		{
 			if (p->getSize() > _bShip->getPower())
 			{
@@ -646,11 +702,22 @@ bool Game::gravitateAllBlocks() {
 				return false;
 			}
 			else {
-				_bShip->setCarrier(p);
+				_bShip->setCarrierAtIndex(i, p);
+				p->setShipToMoveWith(_bShip);
 				p->setHasMoved(false);
 			}
 		}
+		if (v == Signs::Space)
+		{
+			if (p->getShipToMoveWith() != nullptr)
+			{
+				p->getShipToMoveWith()->setCarrierAtIndex(i,nullptr);
+				p->setShipToMoveWith(nullptr);
+			}
+		}
+
 	}
+	
 	return true; // all blocks did not kill any ship - can return true!
 
 }
@@ -677,7 +744,7 @@ bool Game::moveAllGhosts() {
 void Game::printInstructions() const
 {
 	clrscr();
-	static char instructionsScreen[Sizes::InGameScreens_HEIGHT + 19][Sizes::InGameScreens_WIDTH + 28] = {
+	static char instructionsScreen[Sizes::BoardHeight][Sizes::BoardWidth] = {
 	"******************************************************************************\n",
 	"*                                                                            *\n",
 	"*                    ThunderBirds - Instructions:                            *\n",
@@ -705,9 +772,9 @@ void Game::printInstructions() const
 	"******************************************************************************\0" };
 
 
-	for (int r = 0; r < Sizes::InGameScreens_HEIGHT + 19; r++)
+	for (int r = 0; r < Sizes::BoardHeight; r++)
 	{
-		for (int c = 0; c < Sizes::InGameScreens_WIDTH + 28; c++)
+		for (int c = 0; c < Sizes::BoardWidth; c++)
 			cout << instructionsScreen[r][c];
 
 	}
@@ -718,23 +785,33 @@ void Game::printInstructions() const
 
 void Game::printPauseScreen() const
 {
-	static char pauseScreen[Sizes::InGameScreens_HEIGHT][Sizes::InGameScreens_WIDTH] = {
-		"**************************************************\n",
-		"*                                                *\n",
-		"*                 GAME PAUSED!                   *\n",
-		"*     Press ESC to continue, or 9 to exit game   *\n",
-		"*                                                *\n",
-		"**************************************************\0" };
+	static char pauseScreen[Sizes::InGameScreens_HEIGHT][Sizes::InGameScreens_WIDTH] =
+	{
+		"*******************************************************************************\n",
+		"*                                                                             *\n",
+		"*                             .B@@&^   ^&@@B.                                 *\n",
+		"*                             7@@@@P   P@@@@7                                 *\n",
+		"*                             7@@@@P   P@@@@7                                 *\n",
+		"*                             7@@@@P   P@@@@7                                 *\n",
+		"*                             7@@@@P   P@@@@7                                 *\n",
+		"*                             7@@@@P   P@@@@7                                 *\n",
+		"*                             .B@@&:   ^&@@B.                                 *\n",
+		"*                                                                             *\n",
+		"*                                                                             *\n",
+		"*                             - GAME PAUSED! -                                *\n",
+		"*                    Press ESC to continue, or 9 to exit game...              *\n",
+		"*                                                                             *\n",
+		"*******************************************************************************\0"
+	};
 
-	cout << "\n\n\n";
+	cout << "\n\n\n\n\n";
 	for (int r = 0; r < Sizes::InGameScreens_HEIGHT; r++)
 	{
-		cout << "\t     ";
 		for (int c = 0; c < Sizes::InGameScreens_WIDTH; c++)
 			cout << pauseScreen[r][c];
 
 	}
-
+	pressAnyKeyToContinue();
 
 
 }
@@ -743,18 +820,33 @@ void Game::printPauseScreen() const
 */
 void  Game::printWinningScreen() const {
 	clrscr();
-	static char winningScreen[Sizes::InGameScreens_HEIGHT][Sizes::InGameScreens_WIDTH] = {
-		"**************************************************\n",
-		"*                                                *\n",
-		"*                CONGRATS, You have won!         *\n",
-		"*            Press any key to continue...        *\n",
-		"*                                                *\n",
-		"**************************************************\n" };
 
-	cout << "\n\n\n";
+
+
+	static char winningScreen[Sizes::InGameScreens_HEIGHT][Sizes::InGameScreens_WIDTH] =
+	{		
+			"*******************************************************************************\n",
+			"*    ____                            _         _       _   _                  *\n",
+			"*   / ___|___  _ __   __ _ _ __ __ _| |_ _   _| | __ _| |_(_) ___  _ __  ___  *\n",
+			"*  | |   / _ \\| '_ \\ / _` | '__/ _` | __| | | | |/ _` | __| |/ _ \\| '_ \\/ __| *\n",
+			"*  | |__| (_) | | | | (_| | | | (_| | |_| |_| | | (_| | |_| | (_) | | | \\__ \\ *\n",
+			"*   \\____\\___/|_| |_|\\__, |_|  \\__,_|\\__|\\__,_|_|\\__,_|\\__|_|\\___/|_| |_|___/ *\n",
+			"*                    |___/                                                    *\n",
+			"*                                                                             *\n",
+			"*                                                                             *\n",
+			"*                                                                             *\n",
+			"*          You have won this level!! Press ANY key to continue...             *\n",
+			"*                                                                             *\n",
+			"*                                                                             *\n",
+			"*                                                                             *\n",
+			"*******************************************************************************\0"
+	};
+
+
+
+	cout << "\n\n\n\n\n";
 	for (int r = 0; r < Sizes::InGameScreens_HEIGHT; r++)
 	{
-		cout << "\t     ";
 		for (int c = 0; c < Sizes::InGameScreens_WIDTH; c++)
 			cout << winningScreen[r][c];
 
@@ -768,23 +860,35 @@ void  Game::printWinningScreen() const {
 
 void  Game::printLossScreen() const {
 	clrscr();
-	static char lossScreen[Sizes::InGameScreens_HEIGHT][Sizes::InGameScreens_WIDTH] = {
-		"**************************************************\n",
-		"*                                                *\n",
-		"*          SORRY, You have lost all your         *\n",
-		"*     lives, that means you have lost the game!  *\n",
-		"*           Press any key to continue...         *\n",
-		"**************************************************\n" };
+	static char lossScreen[Sizes::InGameScreens_HEIGHT][Sizes::InGameScreens_WIDTH] =
+	{
+			"*******************************************************************************\n",
+			"*                               _____________                                 *\n",
+			"*                             ^/             \\^                               *\n",
+			"*                             ^|             |^                               *\n",
+			"*                             ^|             |^                               *\n",
+			"*                             ^|  R . I . P  |^                               *\n",
+			"*                             ^|             |^                               *\n",
+			"*                             ^|             |^                               *\n",
+			"*                            .P|:::::::::::::|P.                              *\n",
+			"*                          ^YYYYYYYYYYYYYYYYYYYYY^                            *\n",
+			"*                         ~~P77777777777777777777P~~                          *\n",
+			"*                                                                             *\n",
+			"*    SORRY, You have lost all your lives. that means you have lost the game!  *\n",
+			"*                        Press any key to continue...                         *\n",
+			"*******************************************************************************\0"	
+	};
 
-	cout << "\n\n\n";
+
+
+	cout << "\n\n\n\n\n";
 	for (int r = 0; r < Sizes::InGameScreens_HEIGHT; r++)
 	{
-		cout << "\t     ";
 		for (int c = 0; c < Sizes::InGameScreens_WIDTH; c++)
 			cout << lossScreen[r][c];
 
 	}
-
+	pressAnyKeyToContinue();
 	pressAnyKeyToContinue();
 }
 

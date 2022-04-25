@@ -98,7 +98,12 @@ void Ship::addDiffToPoints(int xDiff, int yDiff) {
 		_pointsVec[i].y += yDiff;
 	}
 }
-
+void Ship::initBlockToCarryVector(int numBlocks)
+{
+	_blocksToCarryVec.resize(numBlocks);
+	for (auto& b : _blocksToCarryVec)
+		b = nullptr;
+}
 /*
 * move function, checks if ship can move, and if it does - returns true, otherwise returns false. also if hits a block, checks if it can move forwrd.
 * @parm int xDiff -> the direction of ship (x value of direction).
@@ -108,68 +113,130 @@ void Ship::addDiffToPoints(int xDiff, int yDiff) {
 */
 bool Ship::move(int xDiff, int yDiff, int maxPower, vector<Block*>& vec)
 {
-	for (int i = 0; i < _numPoints; i++) 
-	{
-		Point nextPos(_pointsVec[i].x + xDiff, _pointsVec[i].y + yDiff);
-
-		if (_pBoard->isWall(nextPos)) // case: next move = wall
-			return false;
-		else if (_pBoard->isGhost(nextPos))
+	
+		for (int i = 0; i < _numPoints; i++)
 		{
-			_hitGhost = true;
-			return false;
-		}
-		else if (_pBoard->isExit(nextPos)) // case: next move = exit
-		{
-			this->removeFromBoard();
-			_exitArrived = true;
-			return false;
-		}
-		else  if (_pBoard->isShip(nextPos) && _pBoard->getCharAt(nextPos) != _ch) // case: next move = other ship
-			return false;
-	}
+			Point nextPos(_pointsVec[i].x + xDiff, _pointsVec[i].y + yDiff);
 
-	////check carry move and remove the carry of we mithakech bakir
-	//if (_pBlockToCarry != nullptr) //case block fell on ship - then ship needs to carry it
-	//{
-	//	if (yDiff >= 0) //only for right and left and down (otherwise block already moved)
-	//	{
-	//		if (!_pBlockToCarry->move(xDiff, yDiff, _sShip->getPower(), _blocksVec))
-	//		{
-	//			_sShip->setCarrier(nullptr);
-	//		}
-	//	}
-	//}
-
-	for (int i = 0; i < _numPoints; i++)
-	{
-		Point nextPos(_pointsVec[i].x + xDiff, _pointsVec[i].y + yDiff);
-
-		if (_pBoard->isBlock(nextPos)) // case: next move = block
-		{
-			int idx = findBlockIndex(nextPos, vec);
-			if (idx != -1)
+			if (_pBoard->isWall(nextPos)) // case: next move = wall
+				return false;
+			else if (_pBoard->isGhost(nextPos))
 			{
-				if (maxPower <= 0) // case: ship can not move the block
-					return false;
-				else if (vec[idx] != _pBlockToCarry)
+				_hitGhost = true;
+				return false;
+			}
+			else if (_pBoard->isExit(nextPos)) // case: next move = exit
+			{
+				this->removeFromBoard();
+				_exitArrived = true;
+				return false;
+			}
+			else  if (_pBoard->isShip(nextPos) && _pBoard->getCharAt(nextPos) != _ch) // case: next move = other ship
+				return false;
+		}
+
+
+		for (auto& b : _blocksToCarryVec)
+			if (b != nullptr)
+			{
+				if (!b->move(xDiff, yDiff, getPower(), vec))
+					b = nullptr;
+			}
+		
+		
+
+		for (int i = 0; i < _numPoints; i++)
+		{
+			Point nextPos(_pointsVec[i].x + xDiff, _pointsVec[i].y + yDiff);
+
+			if (_pBoard->isBlock(nextPos)) // case: next move = block
+			{
+				int idx = findBlockIndex(nextPos, vec);
+				if (idx != -1)
 				{
-					// recursive - check for more blocks to push:
-					bool res = vec[idx]->move(xDiff, yDiff, maxPower - vec[idx]->getSize(), vec);
-					if (res == false)
+					if (maxPower <= 0) // case: ship can not move the block
 						return false;
+					else if (_blocksToCarryVec[idx] == nullptr)
+					{
+						// recursive - check for more blocks to push:
+
+						bool res = vec[idx]->move(xDiff, yDiff, maxPower - getCarriedBlocksWeight() - vec[idx]->getSize(), vec);
+						if (res == false)
+							return false;
+
+						if(yDiff>=0) vec[idx]->setShipToMoveWith(this);
+						_blocksToCarryVec[idx] = vec[idx];
+						
+					}
 				}
+
 			}
 		}
-	}
-	// if arrives here, then loop has ended - all points will hit space, ship can move forward.
-	this->removeFromBoard();
-	this->del();
-	this->addDiffToPoints(xDiff, yDiff);
-	this->draw();
-	this->putOnBoard();
-	return true;
 
+
+
+		// if arrives here, then loop has ended - all points will hit space, ship can move forward.
+		
+		
+
+
+
+		this->removeFromBoard();
+		this->del();
+		this->addDiffToPoints(xDiff, yDiff);
+		this->draw();
+		this->putOnBoard();
+
+		this->displayMovedBlocks();
+		return true;
+
+
+	}
+
+void Ship::deleteMovedBlocks()  { //non const function 
+	for (auto& b : _blocksToCarryVec)
+	{
+		if (b != nullptr)
+		{
+			b->removeFromBoard();
+			b->del();
+		}
+	}
+
+}
+
+void Ship::displayMovedBlocks() { //non const function
+	for (int i = 0; i < _blocksToCarryVec.size(); i++)
+	{
+
+		if (_blocksToCarryVec[i] != nullptr)
+		{
+			_blocksToCarryVec[i]->putOnBoard();
+			_blocksToCarryVec[i]->draw();
+
+			if (_blocksToCarryVec[i]->getShipToMoveWith() != nullptr)
+				_blocksToCarryVec[i] = nullptr;
+		}
+
+		
+	}
+
+}
+
+
+void Ship::moveCarriers(int xDiff, int yDiff)
+{
+	for (auto& b : _blocksToCarryVec)
+	{
+		if (b != nullptr) 
+		{
+			b->removeFromBoard();
+			b->del();
+			b->addDiffToPoints(xDiff, yDiff);
+			b->draw();
+			b->putOnBoard();
+		}
+	}
 
 }
 

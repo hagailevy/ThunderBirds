@@ -16,11 +16,13 @@ struct Keys {
 	constexpr static char Left = 'a';
 	constexpr static char _Small = 's';
 	constexpr static char _Big = 'b';
+	
+	constexpr static char StartGame = '1';
+	constexpr static char SelectFile = '2';
+	constexpr static char ColorMode = '3';
 	constexpr static char Instructions = '8';
 	constexpr static char ExitKey = '9';
-	constexpr static char StartGame = '1';
 
-	
 	constexpr static int Small = 0;
 	constexpr static int Big = 1;
 }; 
@@ -38,10 +40,10 @@ struct Signs {
 };
 
 struct Sizes {
-	constexpr static int InGameScreens_HEIGHT = 6;
-	constexpr static int InGameScreens_WIDTH = 52;
-	constexpr static int BoardSize_HEIGHT = 80;
-	constexpr static int BoardSize_WIDTH = 25;
+	constexpr static int InGameScreens_HEIGHT = 15;
+	constexpr static int InGameScreens_WIDTH = 81;
+	constexpr static int BoardHeight = 25;
+	constexpr static int BoardWidth = 80;
 	constexpr static int BigPower = 6;
 	constexpr static int SmallPower = 3;
 };

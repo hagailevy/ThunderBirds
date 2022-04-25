@@ -1,5 +1,6 @@
 #include "Block.h"
 #include "Board.h"
+#include "Ship.h"
 /*
 * constractor
 * @parm Points* pointsArr -> An array of Points.
@@ -135,9 +136,18 @@ char Block::gravity()
 			return _pBoard->getCharAt(dest); //fell on the floor or on a ship (brick)
 	}
 
-	// otherwise: keep falling!!
+
+	/*if (getShipToMoveWith() != nullptr)
+	{
+
+
+		_shipToMoveWith->setCarrier(nullptr);
+		setShipToMoveWith(nullptr);
+	}*/
 
 	_hasMoved = true;
+
+
 	this->removeFromBoard();
 	this->del();
 	this->addDiffToPoints(0, 1);
@@ -159,6 +169,7 @@ char Block::gravity()
 */
 bool Block::move(int xDiff, int yDiff, int maxPower, vector<Block*>& vec)
 {
+
 	if (maxPower < 0)
 		return false;
 
@@ -175,7 +186,14 @@ bool Block::move(int xDiff, int yDiff, int maxPower, vector<Block*>& vec)
 		else if (_pBoard->isExit(nextPos)) // case: next move = exit - block can not exit
 			return false;
 		else if (_pBoard->isShip(nextPos))
-			return false;
+		{	
+			if (_shipToMoveWith != nullptr)
+			{
+				if (_pBoard->getCharAt(nextPos) != _shipToMoveWith->getCh())
+					return false;
+			}
+			else return false;
+		}
 		else if (_pBoard->isBlock(nextPos) && !isInBlock(nextPos)) // case: next move = block (not this one itself)
 		{
 			int idx = findBlockIndex(nextPos, vec);
@@ -186,7 +204,7 @@ bool Block::move(int xDiff, int yDiff, int maxPower, vector<Block*>& vec)
 				else
 				{
 					// recursive - check for more blocks to push:
-					bool res = vec[idx]->move(xDiff, yDiff, maxPower - ( vec[idx]->getSize() ), vec);
+					bool res = vec[idx]->move(xDiff, yDiff, maxPower - (vec[idx]->getSize()), vec);
 					if (res == false)
 						return false;
 
@@ -197,13 +215,14 @@ bool Block::move(int xDiff, int yDiff, int maxPower, vector<Block*>& vec)
 
 	}
 
+
+
 	// if arrives here, then loop has ended - all points will hit space, block can move forward.
-		this->removeFromBoard();
-		this->del();
-		this->addDiffToPoints(xDiff, yDiff);
-		this->putOnBoard();
-		this->draw();
-		return true;
+	removeFromBoard();
+	del();
+	addDiffToPoints(xDiff, yDiff);
+	
+	return true;
 }
 
 /*

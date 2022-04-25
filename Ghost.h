@@ -13,6 +13,8 @@ class Ghost
 	int _yDiff = 0;
 
 	bool _hitShip = false;
+
+
 public:
 	Ghost(Point pos, char ch = Signs::Ghost,  Board* pBoard = nullptr, char movingMode = GhostType::Vertical);
 	void setBoard(Board* pBoard);
